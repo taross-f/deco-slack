@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "deco-slack"
-version = "0.1.0"
-description = ""
+version = "0.0.1"
+description = "Decorator that sends easily messages to Slack"
 authors = ["taross-f <taro.furuya@gmail.com>"]
 
 [tool.poetry.dependencies]
@@ -16,4 +16,4 @@ requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
 [tool.poetry.scripts]
-test = "python -m pytest tests/"
+test = "python -m pytest tests/ --verbose"
