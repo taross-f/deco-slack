@@ -1,9 +1,9 @@
-from deco_slack import __version__
-from deco_slack.deco_slack import deco_slack
+from deco_slack import __version__, deco_slack
 
 
 def test_version():
   assert __version__ == '0.0.1'
+
 
 @deco_slack(
     start={
@@ -24,11 +24,13 @@ def test_version():
 def _run_success():
   print('_run_success()')
 
+
 def test_success(capfd):
   _run_success()
   stdout, stderr = capfd.readouterr()
   assert stdout == "None start good\n_run_success()\nNone success good\n"
   assert stderr == ""
+
 
 class FuncTest():
   def __init__(self):
@@ -63,6 +65,7 @@ class FuncTest():
     self.initial += 1
     print('_run_with_func()')
     self.success += 1
+
 
 def test_success_with_func(capfd):
   obj = FuncTest()

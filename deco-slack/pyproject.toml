@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "deco-slack"
+name = "decoslack"
 version = "0.0.1"
-description = "Decorator that sends easily messages to Slack"
+description = "decoslack notifies you if a method has completed successfully or not."
 authors = ["taross-f <taro.furuya@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6"
 slack-sdk = "^3.3.1"
 
 [tool.poetry.dev-dependencies]
