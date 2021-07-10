@@ -28,7 +28,7 @@ def _run_success():
 def test_success(capfd):
   _run_success()
   stdout, stderr = capfd.readouterr()
-  assert stdout == "None start good\n_run_success()\nNone success good\n"
+  assert stdout == "start good\n_run_success()\nsuccess good\n"
   assert stderr == ""
 
 
@@ -73,5 +73,5 @@ def test_success_with_func(capfd):
   obj._run_with_func()
   stdout, stderr = capfd.readouterr()
   print(stdout)
-  assert stdout == "self.initial=1\nNone start good\n_run_with_func()\nself.success=1\nNone success good\nself.initial=2\nNone start good\n_run_with_func()\nself.success=2\nNone success good\n"
+  assert stdout == "self.initial=1\nstart good\n_run_with_func()\nself.success=1\nsuccess good\nself.initial=2\nstart good\n_run_with_func()\nself.success=2\nsuccess good\n"
   assert stderr == ""

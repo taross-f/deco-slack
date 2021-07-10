@@ -1,26 +1,32 @@
-__version__ = '0.0.1'
-
 from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+from functools import wraps
 import os
+import sys
 import traceback
 
 
-class SlackClient:
+__version__ = '0.0.1'
+
+
+class _Helper:
   def __init__(self):
     self.client = WebClient(os.getenv('SLACK_TOKEN'))
     self.channel = os.getenv('SLACK_CHANNEL')
 
-  def send_attachment(self, title, attachment):
-    self.client.chat_postMessage(
-        channel=self.channel,
-        text=title,
-        attachments=[attachment]
-    )
+  def send_attachment(self, attachment):
+    try:
+      self.client.chat_postMessage(
+          channel=self.channel,
+          attachments=[attachment]
+      )
+    except SlackApiError as e:
+      sys.stderr.write(f'SlackApiError raised. {e}')
 
 
-class PrintClient:
-  def send_attachment(self, title, attachment):
-    print(title, attachment["title"], attachment["color"])
+class _Printer:
+  def send_attachment(self, attachment):
+    print(attachment["title"], attachment["color"])
 
 
 def _call_func_if_set(attachment, *args):
@@ -43,15 +49,15 @@ def deco_slack(**kwargs):
         },
       }
   '''
-  client = PrintClient() if 'mocking' in kwargs and kwargs['mocking'] else SlackClient()
+  client = _Printer() if 'mocking' in kwargs and kwargs['mocking'] else _Helper()
 
   def dec(func):
+    @wraps(func)
     def wrapper(*args, **options):
       try:
         if 'start' in kwargs:
           _call_func_if_set(kwargs['start'], *args)
           client.send_attachment(
-              None,
               kwargs['start']
           )
         func(*args, **options)
@@ -59,10 +65,9 @@ def deco_slack(**kwargs):
         if 'success' in kwargs:
           _call_func_if_set(kwargs['success'], *args)
           client.send_attachment(
-              None,
               kwargs['success']
           )
-      except Exception as e:
+      except:
         if 'error' in kwargs:
           attachment = kwargs['error']
           attachment['text'] = attachment['text'] if 'text' in attachment else ''
@@ -70,7 +75,6 @@ def deco_slack(**kwargs):
             attachment['text'] += f"\n```{traceback.format_exc()}```"
           _call_func_if_set(kwargs['error'], *args)
           client.send_attachment(
-              None,
               attachment
           )
         raise

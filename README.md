@@ -10,6 +10,6 @@ decoslack notifies you if a method has completed successfully or not.
 ## Configurations
 Environment variables to set
 - SLACK_TOKEN
-  - SlackToken that can be used with Incoming Webhook
+  - Slack bot token that can be used with chat:write.public scope.
 - SLACK_CHANNEL
-  - Channel Name to be notified with out # (like notify_xxx not #notify_xxx)
+  - Channel name to be notified without # (like notify_xxx not #notify_xxx)
