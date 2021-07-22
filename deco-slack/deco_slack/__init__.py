@@ -11,6 +11,9 @@ __version__ = '0.0.1'
 
 class _Helper:
   def __init__(self):
+    if not (os.getenv('SLACK_TOKEN') and os.getenv('SLACK_CHANNEL')):
+      sys.stderr.write(f'deco_slack needs SLACK_TOKEN and SLACK_CHANNEL env.\n')
+
     self.client = WebClient(os.getenv('SLACK_TOKEN'))
     self.channel = os.getenv('SLACK_CHANNEL')
 
@@ -18,6 +21,7 @@ class _Helper:
     try:
       self.client.chat_postMessage(
           channel=self.channel,
+          text=attachment.get('text'),
           attachments=[attachment]
       )
     except SlackApiError as e:
