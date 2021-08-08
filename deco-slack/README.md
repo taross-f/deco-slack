@@ -1,3 +1,5 @@
+[![Downloads](https://pepy.tech/badge/deco-slack)](https://pepy.tech/project/deco-slack)
+
 # decoslack
 
 decoslack notifies you via Slack if a method has completed successfully or not.
