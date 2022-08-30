@@ -30,6 +30,10 @@ jobs:
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v7
 
+      - name: Poetry install
+        working-directory: ./deco-slack
+        run: poetry install --no-interaction
+
       - name: Run Tests
         working-directory: ./deco-slack
         run: poetry run pytest
