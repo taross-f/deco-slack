@@ -11,11 +11,14 @@ decoslack notifies you via Slack if a method has completed successfully or not.
 
 ## Configurations
 Environment variables to set
-- SLACK_TOKEN
+- {DECO_SLACK_PREFIX}SLACK_TOKEN
   - Slack bot token that can be used with chat:write.public scope.
-- SLACK_CHANNEL
+- {DECO_SLACK_PREFIX}SLACK_CHANNEL
   - Channel name to be notified without # (like notify_xxx not #notify_xxx)
-
+- DECO_SLACK_PREFIX (optional)
+  - Prefix for environment variables.
+    - If not set, defaults to "".
+    
 ## Example
 
 ```py
