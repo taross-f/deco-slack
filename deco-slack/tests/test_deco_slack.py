@@ -3,7 +3,7 @@ from deco_slack import __version__, deco_slack, _Helper
 
 
 def test_version():
-  assert __version__ == '0.0.1'
+  assert __version__ == '0.0.2'
 
 
 @deco_slack(

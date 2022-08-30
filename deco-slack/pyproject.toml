@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deco_slack"
-version = "0.0.1"
+version = "0.0.2"
 description = "deco_slack notifies you if a method has completed successfully or not."
 authors = ["taross-f <taro.furuya@gmail.com>"]
 readme = "README.md"
