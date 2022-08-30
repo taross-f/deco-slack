@@ -27,17 +27,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # - name: Install Poetry
-      #   run: |
-      #     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-
-      # - name: Add path for Poetry
-      #   run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-
-      # - name: Install Dependencies
-      #   working-directory: ./deco-slack
-      #   run: poetry poetry install --no-interaction
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v7
 
       - name: Run Tests
         working-directory: ./deco-slack
-        run: pytest
+        run: poetry run pytest
