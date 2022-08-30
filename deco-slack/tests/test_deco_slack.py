@@ -1,4 +1,5 @@
-from deco_slack import __version__, deco_slack
+import os
+from deco_slack import __version__, deco_slack, _Helper
 
 
 def test_version():
@@ -75,3 +76,22 @@ def test_success_with_func(capfd):
   print(stdout)
   assert stdout == "self.initial=1\nstart good\n_run_with_func()\nself.success=1\nsuccess good\nself.initial=2\nstart good\n_run_with_func()\nself.success=2\nsuccess good\n"
   assert stderr == ""
+
+
+def test_helper():
+  os.environ['SLACK_TOKEN'] = 'token'
+  os.environ['SLACK_CHANNEL'] = 'channel'
+  h = _Helper()
+  assert h._prefix == ''
+  assert h.client.token == 'token'
+  assert h.channel == 'channel'
+
+
+def test_helper_with_prefix():
+  os.environ['DECO_SLACK_SLACK_TOKEN'] = 'token'
+  os.environ['DECO_SLACK_SLACK_CHANNEL'] = 'channel'
+  os.environ['DECO_SLACK_PREFIX'] = 'DECO_SLACK_'
+  h = _Helper()
+  assert h._prefix == 'DECO_SLACK_'
+  assert h.client.token == 'token'
+  assert h.channel == 'channel'

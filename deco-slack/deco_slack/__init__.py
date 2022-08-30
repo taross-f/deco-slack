@@ -1,3 +1,4 @@
+from typing import Callable
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from functools import wraps
@@ -10,14 +11,19 @@ __version__ = '0.0.1'
 
 
 class _Helper:
+  client: WebClient
+  channel: str
+
   def __init__(self):
-    if not (os.getenv('SLACK_TOKEN') and os.getenv('SLACK_CHANNEL')):
+    self._prefix = os.getenv('DECO_SLACK_PREFIX', '')
+    token = os.getenv(f'{self._prefix}SLACK_TOKEN')
+    self.client = WebClient(token)
+    self.channel = os.getenv(f'{self._prefix}SLACK_CHANNEL', '')
+
+    if not (token and self.channel):
       sys.stderr.write(f'deco_slack needs SLACK_TOKEN and SLACK_CHANNEL env.\n')
 
-    self.client = WebClient(os.getenv('SLACK_TOKEN'))
-    self.channel = os.getenv('SLACK_CHANNEL')
-
-  def send_attachment(self, attachment):
+  def send_attachment(self, attachment: dict):
     try:
       self.client.chat_postMessage(
           channel=self.channel,
@@ -55,7 +61,7 @@ def deco_slack(**kwargs):
   '''
   client = _Printer() if 'mocking' in kwargs and kwargs['mocking'] else _Helper()
 
-  def dec(func):
+  def dec(func: Callable):
     @wraps(func)
     def wrapper(*args, **options):
       try:
