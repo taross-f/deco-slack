@@ -35,7 +35,9 @@ jobs:
         run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Install Dependencies
+        working-directory: ./deco-slack
         run: poetry install --no-interaction
 
       - name: Run Tests
+        working-directory: ./deco-slack
         run: poetry run pytest tests
