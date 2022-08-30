@@ -34,10 +34,6 @@ jobs:
       - name: Add path for Poetry
         run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
-      - name: Install Dependencies
-        working-directory: ./deco-slack
-        run: poetry install --no-interaction
-
-      - name: Run Tests
-        working-directory: ./deco-slack
-        run: poetry run pytest tests
+      - name: GitHub Action for pytest
+        # You may pin to the exact commit or the version.
+        uses: cclauss/GitHub-Action-for-pytest@0.5.0
