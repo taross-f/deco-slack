@@ -6,6 +6,7 @@ decoslack notifies you via Slack if a method has completed successfully or not.
 
 - Notify Slack when a process starts, ends normally, or ends abnormally.
 - Each notification can be set on or off.
+- Support dynamic message formatting based on function results or errors.
 
 ## Configurations
 Environment variables to set
@@ -42,22 +43,54 @@ from deco_slack import deco_slack
     },
 )
 def test1():
-  print('test1')
+    print('test1')
 
 
+# Dynamic message formatting example
 @deco_slack(
     success={
-        "text": "success text",
-        "title": 'success',
+        "text_formatter": lambda result: f"Process completed with result: {result}",
+        "title": "Success",
         "color": "good"
     },
     error={
-        "title": 'error',
+        "text_formatter": lambda e: f"Error occurred: {str(e)}",
+        "title": "Error",
         "color": "danger",
         "stacktrace": True
-    },
+    }
 )
-def error1():
-  raise ValueError('error occured.')
+def process_data(data):
+    result = data * 2
+    return result
 
 ```
+
+## Advanced Features
+
+### Dynamic Message Formatting
+
+You can customize notification messages based on function results or errors using `text_formatter` and `title_formatter`:
+
+```python
+@deco_slack(
+    success={
+        "text_formatter": lambda result: f"Process completed with result: {result}",
+        "title_formatter": lambda result: f"Success: {result}",
+        "color": "good"
+    },
+    error={
+        "text_formatter": lambda e: f"Error details: {str(e)}",
+        "color": "danger"
+    }
+)
+def your_function():
+    # Your code here
+    pass
+```
+
+The formatters receive:
+- `success`: The function's return value
+- `error`: The exception object
+
+This allows you to create more informative and context-aware notifications.
