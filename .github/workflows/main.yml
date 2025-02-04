@@ -36,7 +36,9 @@ jobs:
 
       - name: Run Lint
         working-directory: ./deco-slack
-        run: poetry run ruff check .
+        run: |
+          poetry run ruff check .
+          poetry run ruff format . --check
 
       - name: Run Tests
         working-directory: ./deco-slack
