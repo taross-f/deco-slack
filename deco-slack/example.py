@@ -45,11 +45,14 @@ def process_with_result(data):
 
 
 if __name__ == "__main__":
+    print("=== 基本的な使用例 ===")
     test1()
+    
+    print("\n=== エラーハンドリングの例 ===")
     try:
         error1()
     except ValueError:
         pass
 
-    # 動的メッセージのテスト
+    print("\n=== 動的メッセージの例 ===")
     process_with_result(10)

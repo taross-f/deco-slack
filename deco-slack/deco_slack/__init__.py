@@ -36,9 +36,10 @@ class _Helper:
 
 class _Printer:
     def send_attachment(self, attachment):
-        if "text" in attachment:
+        if "text" in attachment and attachment["text"] is not None:
             print(attachment["text"])
-        print(attachment["title"], attachment["color"])
+        if "title" in attachment and attachment["title"] is not None:
+            print(attachment["title"], attachment["color"])
 
 
 def _call_func_if_set(attachment, *args):
@@ -46,12 +47,25 @@ def _call_func_if_set(attachment, *args):
         attachment["func"](*args)
 
 
-def _update_message(message: dict, result: Any) -> dict:
-    """Update message with function result"""
-    if callable(message.get("text_formatter")):
-        message["text"] = message["text_formatter"](result)
-    if callable(message.get("title_formatter")):
-        message["title"] = message["title_formatter"](result)
+def _create_message(base_message: dict, result: Any = None) -> dict:
+    """Create a new message for Slack, applying formatters if they exist"""
+    message = {
+        "color": base_message.get("color"),
+        "title": base_message.get("title"),
+        "text": base_message.get("text"),
+    }
+
+    # Apply formatters if they exist
+    if callable(base_message.get("text_formatter")):
+        message["text"] = base_message["text_formatter"](result)
+    if callable(base_message.get("title_formatter")):
+        message["title"] = base_message["title_formatter"](result)
+
+    # Copy other fields except formatters
+    for key, value in base_message.items():
+        if key not in ["text_formatter", "title_formatter"] and key not in message:
+            message[key] = value
+
     return message
 
 
@@ -79,27 +93,26 @@ def deco_slack(**kwargs):
         def wrapper(*args, **options):
             try:
                 if "start" in kwargs:
-                    _call_func_if_set(kwargs["start"], *args)
-                    client.send_attachment(kwargs["start"].copy())
+                    message = _create_message(kwargs["start"])
+                    _call_func_if_set(message, *args)
+                    client.send_attachment(message)
 
                 result = func(*args, **options)
 
                 if "success" in kwargs:
-                    success_message = kwargs["success"].copy()
-                    success_message = _update_message(success_message, result)
-                    _call_func_if_set(success_message, *args)
-                    client.send_attachment(success_message)
+                    message = _create_message(kwargs["success"], result)
+                    _call_func_if_set(message, *args)
+                    client.send_attachment(message)
 
                 return result
             except Exception as e:
                 if "error" in kwargs:
-                    error_message = kwargs["error"].copy()
-                    error_message["text"] = error_message.get("text", "")
-                    if "stacktrace" in error_message:
-                        error_message["text"] += f"\n```{traceback.format_exc()}```"
-                    error_message = _update_message(error_message, e)
-                    _call_func_if_set(error_message, *args)
-                    client.send_attachment(error_message)
+                    message = _create_message(kwargs["error"], e)
+                    if "stacktrace" in kwargs["error"]:
+                        message["text"] = (message.get("text", "") +
+                                         f"\n```{traceback.format_exc()}```")
+                    _call_func_if_set(message, *args)
+                    client.send_attachment(message)
                 raise
 
         return wrapper
