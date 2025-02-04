@@ -34,6 +34,10 @@ jobs:
         working-directory: ./deco-slack
         run: poetry install --no-interaction
 
+      - name: Run Lint
+        working-directory: ./deco-slack
+        run: poetry run ruff check .
+
       - name: Run Tests
         working-directory: ./deco-slack
         run: poetry run pytest
