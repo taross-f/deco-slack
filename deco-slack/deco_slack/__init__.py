@@ -76,9 +76,9 @@ def deco_slack(**kwargs):
           (start|success|error)={
             'fallback': "",
             "text": "",
-            "text_formatter": Callable[[Any], str],  # Optional function to format text
+            "text_formatter": Callable[[Any], str],  # Format text
             "title": 'Task A has succeeded :mute:',
-            "title_formatter": Callable[[Any], str],  # Optional function to format title
+            "title_formatter": Callable[[Any], str],  # Format title
             "title_link": 'http://toaru.url'
             "color": "danger",
             "attachment_type": "default",
