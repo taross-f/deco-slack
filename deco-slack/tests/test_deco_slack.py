@@ -1,5 +1,6 @@
 import os
-from deco_slack import __version__, deco_slack, _Helper
+
+from deco_slack import __version__, _Helper, deco_slack
 
 
 def test_version():
@@ -52,10 +53,19 @@ def test_success_with_func(capfd):
     obj._run_with_func()
     stdout, stderr = capfd.readouterr()
     print(stdout)
-    assert (
-        stdout
-        == "self.initial=1\nstart good\n_run_with_func()\nself.success=1\nsuccess good\nself.initial=2\nstart good\n_run_with_func()\nself.success=2\nsuccess good\n"
+    expected = (
+        "self.initial=1\n"
+        "start good\n"
+        "_run_with_func()\n"
+        "self.success=1\n"
+        "success good\n"
+        "self.initial=2\n"
+        "start good\n"
+        "_run_with_func()\n"
+        "self.success=2\n"
+        "success good\n"
     )
+    assert stdout == expected
     assert stderr == ""
 
 
@@ -109,7 +119,7 @@ def test_dynamic_formatting_success(capfd):
 def test_dynamic_formatting_error(capfd):
     try:
         _process_with_formatters(False)
-        assert False, "Should raise ValueError"
+        raise AssertionError("Should raise ValueError")
     except ValueError:
         stdout, stderr = capfd.readouterr()
         assert "Failed: ValueError" in stdout

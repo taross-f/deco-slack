@@ -47,7 +47,7 @@ def process_with_result(data):
 if __name__ == "__main__":
     print("=== 基本的な使用例 ===")
     test1()
-    
+
     print("\n=== エラーハンドリングの例 ===")
     try:
         error1()

@@ -1,11 +1,11 @@
-from typing import Callable, Dict, Any, Optional
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-from functools import wraps
 import os
 import sys
 import traceback
+from functools import wraps
+from typing import Any, Callable
 
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 __version__ = "0.0.2"
 
@@ -21,7 +21,7 @@ class _Helper:
         self.channel = os.getenv(f"{self._prefix}SLACK_CHANNEL", "")
 
         if not (token and self.channel):
-            sys.stderr.write(f"deco_slack needs SLACK_TOKEN and SLACK_CHANNEL env.\n")
+            sys.stderr.write("deco_slack needs SLACK_TOKEN and SLACK_CHANNEL env.\n")
 
     def send_attachment(self, attachment: dict):
         try:
@@ -109,8 +109,9 @@ def deco_slack(**kwargs):
                 if "error" in kwargs:
                     message = _create_message(kwargs["error"], e)
                     if "stacktrace" in kwargs["error"]:
-                        message["text"] = (message.get("text", "") +
-                                         f"\n```{traceback.format_exc()}```")
+                        message["text"] = (
+                            message.get("text", "") + f"\n```{traceback.format_exc()}```"
+                        )
                     _call_func_if_set(message, *args)
                     client.send_attachment(message)
                 raise
