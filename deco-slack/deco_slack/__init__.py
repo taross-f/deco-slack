@@ -110,7 +110,8 @@ def deco_slack(**kwargs):
                     message = _create_message(kwargs["error"], e)
                     if "stacktrace" in kwargs["error"]:
                         message["text"] = (
-                            message.get("text", "") + f"\n```{traceback.format_exc()}```"
+                            message.get("text", "") + 
+                            f"\n```{traceback.format_exc()}```"
                         )
                     _call_func_if_set(message, *args)
                     client.send_attachment(message)
