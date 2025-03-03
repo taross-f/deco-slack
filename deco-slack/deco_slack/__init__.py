@@ -23,7 +23,7 @@ __all__ = [
 
 class NotificationHandler(ABC):
     """Abstract base class for notification handlers."""
-    
+
     @abstractmethod
     def send_attachment(self, attachment: dict) -> None:
         """Send a notification with attachment data."""
@@ -32,10 +32,15 @@ class NotificationHandler(ABC):
 
 class SlackHandler(NotificationHandler):
     """Handles notifications by sending them to Slack."""
-    
-    def __init__(self, token: Optional[str] = None, channel: Optional[str] = None, prefix: str = ""):
+
+    def __init__(
+        self,
+        token: Optional[str] = None,
+        channel: Optional[str] = None,
+        prefix: str = "",
+    ):
         """Initialize Slack client with token and channel.
-        
+
         Args:
             token: Slack API token. If None, read from environment.
             channel: Slack channel ID. If None, read from environment.
@@ -51,7 +56,7 @@ class SlackHandler(NotificationHandler):
 
     def send_attachment(self, attachment: dict) -> None:
         """Send attachment to Slack channel.
-        
+
         Args:
             attachment: Dictionary with message data.
         """
@@ -67,19 +72,19 @@ class SlackHandler(NotificationHandler):
 
 class ConsoleHandler(NotificationHandler):
     """Handles notifications by printing to console. Useful for testing."""
-    
+
     def __init__(self):
         """Initialize console handler with empty message log."""
         self.messages: List[Dict] = []
-    
+
     def send_attachment(self, attachment: dict) -> None:
         """Print attachment to console and store in message log.
-        
+
         Args:
             attachment: Dictionary with message data.
         """
         self.messages.append(attachment.copy())
-        
+
         if "text" in attachment and attachment["text"] is not None:
             print(attachment["text"])
         if "title" in attachment and attachment["title"] is not None:
@@ -120,7 +125,7 @@ def _create_message(base_message: dict, result: Any = None) -> dict:
 
 def deco_slack(**kwargs):
     """Decorator to send notifications to Slack before/after function execution.
-    
+
     Args:
         **kwargs: Configuration options including:
             - start: Message to send before function execution.
@@ -128,7 +133,7 @@ def deco_slack(**kwargs):
             - error: Message to send on exception.
             - mocking: If True, use ConsoleHandler instead of SlackHandler.
             - handler: Custom NotificationHandler instance to use.
-            
+
     Message format:
         {
           'fallback': "",
@@ -141,7 +146,7 @@ def deco_slack(**kwargs):
           "attachment_type": "default",
           "stacktrace": False
         }
-    
+
     Returns:
         Function decorator.
     """
@@ -177,7 +182,7 @@ def deco_slack(**kwargs):
                     # Add stacktrace if configured
                     if kwargs["error"].get("stacktrace"):
                         message["text"] = (
-                            message.get("text", "") 
+                            message.get("text", "")
                             + f"\n```{traceback.format_exc()}```"
                         )
                     _call_func_if_set(message, *args)
