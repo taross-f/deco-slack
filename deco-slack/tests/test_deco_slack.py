@@ -1,10 +1,29 @@
 import os
+from typing import Dict, List
 
-from deco_slack import __version__, _Helper, deco_slack
+from deco_slack import (
+    ConsoleHandler,
+    NotificationHandler,
+    SlackHandler,
+    __version__,
+    _Helper,
+    deco_slack,
+)
 
 
 def test_version():
     assert __version__ == "0.0.2"
+
+
+class MockHandler(NotificationHandler):
+    """Custom notification handler for testing."""
+
+    def __init__(self):
+        self.messages: List[Dict] = []
+
+    def send_attachment(self, attachment: dict) -> None:
+        """Record message in message log."""
+        self.messages.append(attachment.copy())
 
 
 @deco_slack(
@@ -69,23 +88,70 @@ def test_success_with_func(capfd):
     assert stderr == ""
 
 
-def test_helper():
+def test_slack_handler():
     os.environ["SLACK_TOKEN"] = "token"
     os.environ["SLACK_CHANNEL"] = "channel"
-    h = _Helper()
+    h = SlackHandler()
     assert h._prefix == ""
+    assert h.token == "token"
     assert h.client.token == "token"
     assert h.channel == "channel"
 
 
-def test_helper_with_prefix():
+def test_slack_handler_with_prefix():
     os.environ["DECO_SLACK_SLACK_TOKEN"] = "token"
     os.environ["DECO_SLACK_SLACK_CHANNEL"] = "channel"
     os.environ["DECO_SLACK_PREFIX"] = "DECO_SLACK_"
-    h = _Helper()
+    h = SlackHandler()
     assert h._prefix == "DECO_SLACK_"
+    assert h.token == "token"
     assert h.client.token == "token"
     assert h.channel == "channel"
+
+
+def test_slack_handler_with_direct_parameters():
+    h = SlackHandler(
+        token="direct_token", channel="direct_channel", prefix="direct_prefix_"
+    )
+    assert h._prefix == "direct_prefix_"
+    assert h.token == "direct_token"
+    assert h.channel == "direct_channel"
+
+
+def test_helper_backwards_compatibility():
+    """Test that the _Helper alias still works correctly."""
+    os.environ["SLACK_TOKEN"] = "token"
+    os.environ["SLACK_CHANNEL"] = "channel"
+    if "DECO_SLACK_PREFIX" in os.environ:
+        del os.environ["DECO_SLACK_PREFIX"]
+    h = _Helper()
+    assert h._prefix == ""
+    assert h.token == "token"
+    assert h.client.token == "token"
+    assert h.channel == "channel"
+
+
+# Test with custom handler injection
+def test_custom_handler_injection():
+    """Test using a custom handler injected directly."""
+    mock_handler = MockHandler()
+
+    @deco_slack(
+        start={"title": "Start Test", "color": "good"},
+        success={"title": "Success Test", "color": "good"},
+        handler=mock_handler,
+    )
+    def test_function():
+        return "result"
+
+    # Run decorated function
+    result = test_function()
+
+    # Verify results
+    assert result == "result"
+    assert len(mock_handler.messages) == 2
+    assert mock_handler.messages[0]["title"] == "Start Test"
+    assert mock_handler.messages[1]["title"] == "Success Test"
 
 
 # 動的メッセージフォーマットのテスト
@@ -124,3 +190,16 @@ def test_dynamic_formatting_error(capfd):
         stdout, stderr = capfd.readouterr()
         assert "Failed: ValueError" in stdout
         assert stderr == ""
+
+
+def test_console_handler():
+    """Test that ConsoleHandler properly stores messages."""
+    handler = ConsoleHandler()
+    handler.send_attachment(
+        {"title": "Test Title", "color": "good", "text": "Test Text"}
+    )
+
+    assert len(handler.messages) == 1
+    assert handler.messages[0]["title"] == "Test Title"
+    assert handler.messages[0]["color"] == "good"
+    assert handler.messages[0]["text"] == "Test Text"
