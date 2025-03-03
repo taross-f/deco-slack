@@ -1,14 +1,13 @@
 import os
-import unittest.mock
-from typing import List, Dict
+from typing import Dict, List
 
 from deco_slack import (
-    __version__, 
-    ConsoleHandler, 
-    NotificationHandler, 
-    SlackHandler, 
-    _Helper, 
-    deco_slack
+    ConsoleHandler,
+    NotificationHandler,
+    SlackHandler,
+    __version__,
+    _Helper,
+    deco_slack,
 )
 
 
@@ -18,10 +17,10 @@ def test_version():
 
 class MockHandler(NotificationHandler):
     """Custom notification handler for testing."""
-    
+
     def __init__(self):
         self.messages: List[Dict] = []
-    
+
     def send_attachment(self, attachment: dict) -> None:
         """Record message in message log."""
         self.messages.append(attachment.copy())
@@ -111,7 +110,9 @@ def test_slack_handler_with_prefix():
 
 
 def test_slack_handler_with_direct_parameters():
-    h = SlackHandler(token="direct_token", channel="direct_channel", prefix="direct_prefix_")
+    h = SlackHandler(
+        token="direct_token", channel="direct_channel", prefix="direct_prefix_"
+    )
     assert h._prefix == "direct_prefix_"
     assert h.token == "direct_token"
     assert h.channel == "direct_channel"
@@ -134,18 +135,18 @@ def test_helper_backwards_compatibility():
 def test_custom_handler_injection():
     """Test using a custom handler injected directly."""
     mock_handler = MockHandler()
-    
+
     @deco_slack(
         start={"title": "Start Test", "color": "good"},
         success={"title": "Success Test", "color": "good"},
-        handler=mock_handler
+        handler=mock_handler,
     )
     def test_function():
         return "result"
-    
+
     # Run decorated function
     result = test_function()
-    
+
     # Verify results
     assert result == "result"
     assert len(mock_handler.messages) == 2
@@ -194,8 +195,10 @@ def test_dynamic_formatting_error(capfd):
 def test_console_handler():
     """Test that ConsoleHandler properly stores messages."""
     handler = ConsoleHandler()
-    handler.send_attachment({"title": "Test Title", "color": "good", "text": "Test Text"})
-    
+    handler.send_attachment(
+        {"title": "Test Title", "color": "good", "text": "Test Text"}
+    )
+
     assert len(handler.messages) == 1
     assert handler.messages[0]["title"] == "Test Title"
     assert handler.messages[0]["color"] == "good"
