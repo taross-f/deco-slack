@@ -8,7 +8,7 @@ from typing import Any, Callable, Dict, List, Optional
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-__version__ = "0.0.2"
+__version__ = "0.0.5"
 
 __all__ = [
     "__version__",
