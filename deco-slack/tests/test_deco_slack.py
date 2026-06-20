@@ -12,7 +12,7 @@ from deco_slack import (
 
 
 def test_version():
-    assert __version__ == "0.0.2"
+    assert __version__ == "0.0.5"
 
 
 class MockHandler(NotificationHandler):
