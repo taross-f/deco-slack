@@ -1,0 +1,38 @@
+name: Security Audit
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    # Run weekly so newly-disclosed vulnerabilities are caught even without commits
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pip-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v8
+
+      - name: Install project (with dev dependencies)
+        working-directory: ./deco-slack
+        run: poetry install --no-interaction
+
+      - name: Run pip-audit on the locked environment
+        working-directory: ./deco-slack
+        run: |
+          poetry run python -m pip install --upgrade pip pip-audit
+          poetry run pip-audit
