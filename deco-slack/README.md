@@ -26,24 +26,16 @@ from deco_slack import deco_slack
 
 @deco_slack(
     # These parameters are all optional
-    start={
-        "text": "start text",
-        "title": 'start',
-        "color": "good"
-    },
-    success={
-        "text": "success text",
-        "title": 'success',
-        "color": "good"
-    },
+    start={"text": "start text", "title": "start", "color": "good"},
+    success={"text": "success text", "title": "success", "color": "good"},
     error={
-        "title": 'error',
+        "title": "error",
         "color": "danger",
-        "stacktrace": True # Set True if you need stacktrace in a notification
+        "stacktrace": True,  # Set True if you need stacktrace in a notification
     },
 )
 def test1():
-    print('test1')
+    print("test1")
 
 
 # Dynamic message formatting example
@@ -51,19 +43,18 @@ def test1():
     success={
         "text_formatter": lambda result: f"Process completed with result: {result}",
         "title": "Success",
-        "color": "good"
+        "color": "good",
     },
     error={
         "text_formatter": lambda e: f"Error occurred: {str(e)}",
         "title": "Error",
         "color": "danger",
-        "stacktrace": True
-    }
+        "stacktrace": True,
+    },
 )
 def process_data(data):
     result = data * 2
     return result
-
 ```
 
 ## Advanced Features
@@ -77,12 +68,9 @@ You can customize notification messages based on function results or errors usin
     success={
         "text_formatter": lambda result: f"Process completed with result: {result}",
         "title_formatter": lambda result: f"Success: {result}",
-        "color": "good"
+        "color": "good",
     },
-    error={
-        "text_formatter": lambda e: f"Error details: {str(e)}",
-        "color": "danger"
-    }
+    error={"text_formatter": lambda e: f"Error details: {str(e)}", "color": "danger"},
 )
 def your_function():
     # Your code here
